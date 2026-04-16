@@ -37,10 +37,26 @@ class GeminiAdapter
             ->withGenerationConfig($generationConfig)
             ->generateContent($parts);
 
-        $blob = $response->candidates[0]->content->parts[0]->inlineData;
-        $base64Data = $blob->data;
+        $candidate = $response->candidates[0];
+        $imageData = null;
+        foreach ($candidate->content->parts as $part) {
+            if (isset($part->inlineData)) {
+                $imageData = $part->inlineData->data;
+                break;
+            }
+        }
 
-        \file_put_contents($rootDir . '/' . $destFilename, \base64_decode($base64Data));
+        if (!$imageData) {
+            $errorMsg = $candidate->content->parts[0]->text ?? 'Unbekannter Fehler (Keine Bilddaten im Response)';
+            throw new \Exception('Gemini API Error: ' . $errorMsg);
+        }
+
+        $decodedData = \base64_decode($imageData, true);
+        if (!$decodedData) {
+            throw new \Exception('Die empfangenen Bilddaten sind kein gültiges Base64.');
+        }
+
+        \file_put_contents($rootDir . '/' . $destFilename, $decodedData);
     }
 
     protected function setReferences(array $images): array
