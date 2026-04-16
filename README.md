@@ -1,0 +1,1 @@
+# contao-ai-image-generation-bundle
