@@ -1,0 +1,30 @@
+{
+  "name": "alnv/ai-image-generation-bundle",
+  "type": "contao-bundle",
+  "license": "proprietary",
+  "require": {
+    "php":">=8.3",
+    "contao/core-bundle":">=5.3",
+    "google-gemini-php/client": "^2.7"
+  },
+  "config": {
+    "allow-plugins": {
+      "php-http/discovery": true,
+      "contao-components/installer": true,
+      "contao-community-alliance/composer-plugin": true
+    }
+  },
+  "extra": {
+    "contao": {
+      "sources": {
+        "": "system/modules/contao-ai-image-generation-bundle"
+      }
+    },
+    "contao-manager-plugin": "Alnv\\ContaoAiImageGenerationBundle\\ContaoManager\\Plugin"
+  },
+  "autoload": {
+    "psr-4": {
+      "Alnv\\ContaoAiImageGenerationBundle\\": "src/"
+    }
+  }
+}
