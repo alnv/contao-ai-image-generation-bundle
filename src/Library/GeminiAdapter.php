@@ -59,7 +59,22 @@ class GeminiAdapter
         \file_put_contents($rootDir . '/' . $destFilename, $decodedData);
     }
 
-    protected function setReferences(array $images): array
+    public function getPayload(string $prompt, string $destFilename, array $referencesImages = [], array $options = []): array
+    {
+        $model = $options['model'] ?? 'gemini-3.1-flash-image-preview';
+
+        return [
+            'prompt' => $prompt,
+            'webhookUrl' => $options['webhookUrl'] ?? '',
+            'references' => $this->setReferences($referencesImages, false),
+            'config' => [
+                'model' => $model,
+                'aspectRatio' => $options['aspectRatio'] ?? '1:1'
+            ]
+        ];
+    }
+
+    protected function setReferences(array $images, $blnUseBlob = true): array
     {
         $references = [];
 
@@ -78,7 +93,8 @@ class GeminiAdapter
                     $mimeType = MimeType::IMAGE_WEBP;
                     break;
             }
-            $references[] = new Blob(mimeType: $mimeType, data: $this->getBase64Data($image));
+
+            $references[] = $blnUseBlob ? new Blob(mimeType: $mimeType, data: $this->getBase64Data($image)) : ['mimeType' => $mimeType, 'data' => $this->getBase64Data($image)];
         }
 
         return $references;
