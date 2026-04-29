@@ -111,9 +111,8 @@ class GeminiAdapter
         return $references;
     }
 
-    protected function getBase64Data(string $path): string
+    protected function getBase64Data(string $imageContent): string
     {
-        // $rootDir = System::getContainer()->getParameter('kernel.project_dir');
-        return \base64_encode(\file_get_contents($path));
+        return \base64_encode($imageContent);
     }
 }
