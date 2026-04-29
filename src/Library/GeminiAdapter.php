@@ -9,7 +9,6 @@ use Gemini\Data\Blob;
 use Gemini\Data\GenerationConfig;
 use Gemini\Data\ImageConfig;
 use Gemini\Enums\MimeType;
-use Contao\CoreBundle\Image\ImageFactoryInterface;
 
 // https://github.com/google-gemini-php/client
 // https://ai.google.dev/gemini-api/docs/image-generation?hl=de
@@ -85,26 +84,24 @@ class GeminiAdapter
         foreach ($images as $image) {
             $item = $imageFactory->create($rootDir . '/' . $image, [800, 800, 'proportional']);
             $optimizedPath = $item->getPath();
-            $file = new File($optimizedPath);
-            $mimeType = null;
 
-            switch ($file->mime) {
-                case 'image/jpeg':
-                    $mimeType = MimeType::IMAGE_JPEG;
-                    break;
-                case 'image/png':
-                    $mimeType = MimeType::IMAGE_PNG;
-                    break;
-                case 'image/webp':
-                    $mimeType = MimeType::IMAGE_WEBP;
-                    break;
-            }
+            $file = new File($optimizedPath);
+            $mimeType = match ($file->mime) {
+                'image/jpeg' => MimeType::IMAGE_JPEG,
+                'image/png' => MimeType::IMAGE_PNG,
+                'image/webp' => MimeType::IMAGE_WEBP,
+                default => null,
+            };
 
             if (!$mimeType) {
                 continue;
             }
 
-            $references[] = $blnUseBlob ? new Blob(mimeType: $mimeType, data: $this->getBase64Data($image)) : ['mimeType' => $mimeType, 'data' => $this->getBase64Data($image)];
+            $base64Data = $this->getBase64Data($optimizedPath);
+
+            $references[] = $blnUseBlob
+                ? new Blob(mimeType: $mimeType, data: $base64Data)
+                : ['mimeType' => $mimeType, 'data' => $base64Data];
         }
 
         return $references;
@@ -112,8 +109,7 @@ class GeminiAdapter
 
     protected function getBase64Data(string $path): string
     {
-        $rootDir = System::getContainer()->getParameter('kernel.project_dir');
-
-        return \base64_encode(\file_get_contents($rootDir . '/' . $path));
+        // $rootDir = System::getContainer()->getParameter('kernel.project_dir');
+        return \base64_encode(\file_get_contents($path));
     }
 }
