@@ -2,6 +2,7 @@
 
 namespace Alnv\ContaoAiImageGenerationBundle\Library;
 
+use Contao\Environment;
 use Contao\File;
 use Contao\System;
 use Gemini;
@@ -78,14 +79,18 @@ class GeminiAdapter
     {
         $references = [];
         $container = System::getContainer();
-        $imageFactory = $container->get('contao.image.factory');
+        $imageFactory = $container->get('contao.image.picture_factory');
         $rootDir = System::getContainer()->getParameter('kernel.project_dir');
 
         foreach ($images as $image) {
-            $item = $imageFactory->create($rootDir . '/' . $image, [800, 800, 'proportional']);
-            $optimizedPath = $item->getPath();
+            $item = $imageFactory->create($rootDir . '/' . $image, [800, 800]);
+            $imageContent = \file_get_contents(Environment::get('url') . '/' . $item->getImg()['src']->getUrl($rootDir), false, \stream_context_create([
+                "ssl" => [
+                    "verify_peer" => false
+                ]
+            ]));
 
-            $file = new File($optimizedPath);
+            $file = new File($item->getImg()['src']->getUrl($rootDir));
             $mimeType = match ($file->mime) {
                 'image/jpeg' => MimeType::IMAGE_JPEG,
                 'image/png' => MimeType::IMAGE_PNG,
@@ -97,8 +102,7 @@ class GeminiAdapter
                 continue;
             }
 
-            $base64Data = $this->getBase64Data($optimizedPath);
-
+            $base64Data = $this->getBase64Data($imageContent);
             $references[] = $blnUseBlob
                 ? new Blob(mimeType: $mimeType, data: $base64Data)
                 : ['mimeType' => $mimeType, 'data' => $base64Data];
