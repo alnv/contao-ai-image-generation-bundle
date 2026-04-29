@@ -83,7 +83,6 @@ class GeminiAdapter
         $rootDir = System::getContainer()->getParameter('kernel.project_dir');
 
         foreach ($images as $image) {
-
             $item = $imageFactory->create($rootDir . '/' . $image, [800, 800, 'proportional']);
             $optimizedPath = $item->getPath();
             $file = new File($optimizedPath);
@@ -99,6 +98,10 @@ class GeminiAdapter
                 case 'image/webp':
                     $mimeType = MimeType::IMAGE_WEBP;
                     break;
+            }
+
+            if (!$mimeType) {
+                continue;
             }
 
             $references[] = $blnUseBlob ? new Blob(mimeType: $mimeType, data: $this->getBase64Data($image)) : ['mimeType' => $mimeType, 'data' => $this->getBase64Data($image)];
