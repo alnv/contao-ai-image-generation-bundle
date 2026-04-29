@@ -9,6 +9,7 @@ use Gemini\Data\Blob;
 use Gemini\Data\GenerationConfig;
 use Gemini\Data\ImageConfig;
 use Gemini\Enums\MimeType;
+use Contao\CoreBundle\Image\ImageFactoryInterface;
 
 // https://github.com/google-gemini-php/client
 // https://ai.google.dev/gemini-api/docs/image-generation?hl=de
@@ -77,9 +78,15 @@ class GeminiAdapter
     protected function setReferences(array $images, $blnUseBlob = true): array
     {
         $references = [];
+        $container = System::getContainer();
+        $imageFactory = $container->get('contao.image.factory');
+        $rootDir = System::getContainer()->getParameter('kernel.project_dir');
 
         foreach ($images as $image) {
-            $file = new File($image);
+
+            $item = $imageFactory->create($rootDir . '/' . $image, [800, 800, 'proportional']);
+            $optimizedPath = $item->getPath();
+            $file = new File($optimizedPath);
             $mimeType = null;
 
             switch ($file->mime) {
