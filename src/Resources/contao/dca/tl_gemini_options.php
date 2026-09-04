@@ -100,13 +100,8 @@ $GLOBALS['TL_DCA']['tl_gemini_options'] = [
             'filter' => true,
             'options_callback' => function (DataContainer $dc) {
                 $type = $dc->getCurrentRecord()['type'];
-                /*
-                if ($type == 'image') {
-                    return ['image-to-image'];
-                }
-                */
                 if ($type == 'video') {
-                    return ['image-to-video', 'images-to-image', 'frames-to-image'];
+                    return ['image-to-video', 'images-to-video', 'frames-to-video'];
                 }
 
                 return [];
@@ -121,7 +116,7 @@ $GLOBALS['TL_DCA']['tl_gemini_options'] = [
                 'mandatory' => true,
                 'decodeEntities' => true
             ],
-            'options' => ['16:9', '4:3', '1:1', '2:3'],
+            'options' => ['16:9', '4:3', '1:1', '2:3', '9:16'],
             'sql' => ['type' => 'string', 'length' => 16, 'default' => '']
         ],
         'prompt' => [
