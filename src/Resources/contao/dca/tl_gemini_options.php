@@ -34,7 +34,7 @@ $GLOBALS['TL_DCA']['tl_gemini_options'] = [
         '__selector__' => ['type'],
         'default' => 'type',
         'image' => 'type,name;model,aspectRatio;prompt;references',
-        'video' => 'type,subType,name;model;prompt;references'
+        'video' => 'type,subType,name;model,aspectRatio;prompt;references'
     ],
     'fields' => [
         'id' => [
