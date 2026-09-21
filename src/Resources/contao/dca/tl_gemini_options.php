@@ -76,7 +76,7 @@ $GLOBALS['TL_DCA']['tl_gemini_options'] = [
             ],
             'filter' => true,
             'options_callback' => function (DataContainer $dc) {
-                $type = $dc->getCurrentRecord()['type'];
+                $type = $dc->getCurrentRecord()['type'] ?? '';
                 if ($type == 'image') {
                     return ['gemini-2.5-flash-image', 'gemini-3.1-flash-image-preview', 'gemini-3.1-flash-image'];
                 }
@@ -99,7 +99,7 @@ $GLOBALS['TL_DCA']['tl_gemini_options'] = [
             ],
             'filter' => true,
             'options_callback' => function (DataContainer $dc) {
-                $type = $dc->getCurrentRecord()['type'];
+                $type = $dc->getCurrentRecord()['type'] ?? '';
                 if ($type == 'video') {
                     return ['image-to-video', 'images-to-video', 'frames-to-video'];
                 }
