@@ -82,7 +82,7 @@ $GLOBALS['TL_DCA']['tl_gemini_options'] = [
                 }
 
                 if ($type == 'video') {
-                    return ['veo-3.1-generate-preview'];
+                    return ['veo-3.1-generate-preview', 'veo-3.1-fast-generate-preview'];
                 }
 
                 return [];
